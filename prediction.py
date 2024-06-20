@@ -9,8 +9,16 @@ import torch.nn as nn
 import copy
 import numpy as np
 from func import mk_mmd_loss
+import time
 
 pad=-1000
+
+
+def loss_mape(pred, true, eps=1e-10):
+    return torch.abs(true - pred) / (torch.abs(true) + eps)
+
+def loss_smape(pred, true, eps=1e-10):
+    return torch.abs(true - pred) / (torch.abs(true) + torch.abs(pred) + eps) * 2
 
 def get_args():
     parser = argparse.ArgumentParser(description='')
@@ -39,9 +47,12 @@ def get_args():
 
 
 def eval(data_loader,device,model,mask_percent=0.15):
+    start_time = time.time()
     model.eval()
     torch.set_grad_enabled(False)
     mse_list = []
+    mape_list = []
+    smape_list = []
     pbar = tqdm.tqdm(data_loader, disable=False)
     for x, _, _, _, timestamp in pbar:
         x = x.float().to(device)
@@ -91,10 +102,28 @@ def eval(data_loader,device,model,mask_percent=0.15):
         y = model(input, timestamp)
         y = y * std + avg
         loss_mse = nn.MSELoss(reduction="none")
+
+        # print(loss_mask[0])
+
         loss_mask = loss_mask.unsqueeze(2).repeat(1, 1, carrier_num)
         mse = torch.sum(loss_mse(y, x) * loss_mask) / torch.sum(loss_mask)
         mse_list.append(mse.item())
-    return np.mean(mse_list)
+
+        # prediction_length = int(x.shape[1]*mask_percent)
+        # y = y[:,prediction_length:,:]
+        # x = x[:,prediction_length:,:]
+
+        # print(y[0,:,0])
+        # print(x[0,:,0])
+
+        loss_mask[x==0]=0
+        mape = torch.sum(loss_mape(y, x) * loss_mask) / torch.sum(loss_mask)
+        smape = torch.sum(loss_smape(y, x) * loss_mask) / torch.sum(loss_mask)
+        mape_list.append(mape.item())
+        smape_list.append(smape.item())
+    end_time = time.time()
+    print(f"Time Cost: {end_time - start_time} s")
+    return np.mean(mse_list), np.mean(mape_list), np.mean(smape_list)
 
 def iteration(data_loader,device,model,discriminator,optim,optim_dis,train=True,mmd=False,gan=False):
     if train:
@@ -285,8 +314,8 @@ def main():
                                                  testset_num=150, min_len=args.max_len, max_len=args.max_len,
                                                  length=args.max_len)
         test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=True)
-        mse = eval(test_loader, device, model, mask_percent=0.15)
-        print("MSE: {:06f}".format(mse))
+        mse, mape, smape = eval(test_loader, device, model, mask_percent=0.15)
+        print("MSE: {:06f}, MAPE: {:06f}, SMAPE: {:06f}".format(mse, mape, smape))
         return
 
     if args.parameter is not None:

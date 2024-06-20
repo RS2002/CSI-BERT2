@@ -39,6 +39,8 @@ def get_args():
     parser.add_argument("--recover_data", action="store_true",default=False)
     parser.add_argument("--freeze", action="store_true",default=False)
 
+    parser.add_argument('--mode', type=int, default=0) # 0: train(100Hz),test(100Hz); 1: train(100Hz+50Hz),test(100Hz+50Hz); 2: train(100Hz),test(50Hz)
+
     args = parser.parse_args()
     return args
 
@@ -126,23 +128,27 @@ def main():
     print('total parameters:', total_params)
     optim = AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
 
-    if args.recover_data:
-        train_data, test_data = load_data(data_path=args.data_path,train_prop=0.9,magnitude_path=args.magnitude_path)
-    else:
-        if args.random_input:
-            train_data, test_data = load_data_random(data_path=args.data_path, train_prop=0.9,
-                                                     trainset_num=2000, testset_num=150, min_len=args.max_len,
-                                                     max_len=args.max_len * 3, length=args.max_len)
+    if args.mode == 0:
+        if args.recover_data:
+            train_data, test_data = load_data(data_path=args.data_path,train_prop=0.9,magnitude_path=args.magnitude_path)
         else:
-            train_data, test_data = load_data_random(data_path=args.data_path, train_prop=0.9,
-                                                     trainset_num=2000, testset_num=150, min_len=args.max_len,
-                                                     max_len=args.max_len, length=args.max_len)
+            if args.random_input:
+                train_data, test_data = load_data_random(data_path=args.data_path, train_prop=0.9,
+                                                         trainset_num=2000, testset_num=150, min_len=args.max_len,
+                                                         max_len=args.max_len * 3, length=args.max_len)
+            else:
+                train_data, test_data = load_data_random(data_path=args.data_path, train_prop=0.9,
+                                                         trainset_num=2000, testset_num=150, min_len=args.max_len,
+                                                         max_len=args.max_len, length=args.max_len)
+    elif args.mode == 1:
+        train_data1, _, test_data1 = load_data_random(data_path=args.data_path,train_prop=0.45,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=1)
+        _, train_data2, test_data2 = load_data_random(data_path=args.data_path,train_prop=0.45,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=2)
+        train_data = ConcatDataset([train_data1, train_data2])
+        test_data = ConcatDataset([test_data1, test_data2])
+    elif args.mode == 2:
+        train_data, _ = load_data_random(data_path=args.data_path,train_prop=0.9,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=1)
+        _, test_data2 = load_data_random(data_path=args.data_path,train_prop=0.9,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=2)
 
-
-    # train_data1, _, test_data1 = load_data_random(data_path=args.data_path,train_prop=0.45,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=1)
-    # _, train_data2, test_data2 = load_data_random(data_path=args.data_path,train_prop=0.45,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=2)
-    # train_data = ConcatDataset([train_data1, train_data2])
-    # test_data = ConcatDataset([test_data1, test_data2])
 
     train_lodaer = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=True)
