@@ -4,7 +4,7 @@ import argparse
 import tqdm
 import torch
 from torch.utils.data import DataLoader
-from dataset import load_data_random
+from dataset import load_data_random,load_data
 import torch.nn as nn
 import copy
 import numpy as np
@@ -28,9 +28,14 @@ def get_args():
     parser.add_argument("--carrier_dim", type=int, default=52)
     parser.add_argument('--lr', type=float, default=0.0005)
     parser.add_argument('--epoch', type=int, default=30)
+
     parser.add_argument('--data_path', type=str, default="./data/data_sequence.pkl")
+    parser.add_argument("--recover_data", action="store_true",default=False)
+    parser.add_argument('--magnitude_path', type=str, default="recover.npy")
+
     parser.add_argument('--parameter', type=str, default=None)
     parser.add_argument('--eval_percent', type=float, default=None)
+    parser.add_argument('--train_prop', type=float, default=0.9)
 
 
     parser.add_argument('--MMD', action="store_true", default=False)
@@ -289,7 +294,7 @@ def main():
         # test_data = load_data_random(data_path=args.data_path, trainset_num=2000,
         #                                 testset_num=150, min_len=args.max_len, max_len=args.max_len,
         #                                 length=args.max_len)
-        _, test_data = load_data_random(data_path=args.data_path, train_prop=0.9, trainset_num=2000,
+        _, test_data = load_data_random(data_path=args.data_path, train_prop=args.train_prop, trainset_num=2000,
                                                  testset_num=150, min_len=args.max_len, max_len=args.max_len,
                                                  length=args.max_len)
         test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=True)
@@ -304,13 +309,23 @@ def main():
     optim = AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
     optim_dis = AdamW(discriminator.parameters(), lr=args.lr, weight_decay=0.01)
 
-    train_data, test_data = load_data_random(data_path=args.data_path,train_prop=0.9,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len*3,length=args.max_len)
-    train_data, test_data = load_data_random(data_path=args.data_path,train_prop=0.9,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len)
+    # train_data, test_data = load_data_random(data_path=args.data_path,train_prop=args.train_prop,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len*3,length=args.max_len)
 
-    # train_data1, _, test_data1 = load_data_random(data_path=args.data_path,train_prop=0.45,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=1)
-    # _, train_data2, test_data2 = load_data_random(data_path=args.data_path,train_prop=0.45,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=2)
+    if args.recover_data:
+        train_data, test_data = load_data(data_path=args.data_path, train_prop=args.train_prop, magnitude_path=args.magnitude_path)
+    else:
+        train_data, test_data = load_data_random(data_path=args.data_path,train_prop=args.train_prop,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len)
+
+    # train_data1, _, test_data1 = load_data_random(data_path=args.data_path,train_prop=args.train_prop,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=1)
+    # _, train_data2, test_data2 = load_data_random(data_path=args.data_path,train_prop=args.train_prop,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=2)
     # train_data = ConcatDataset([train_data1, train_data2])
     # test_data = ConcatDataset([test_data1, test_data2])
+
+    # train_data1, test_data1 = load_data_random(data_path="./data/WiGesture/data_sequence.pkl",train_prop=args.train_prop,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len)
+    # train_data2, test_data2 = load_data_random(data_path="./data/WiFall/data_sequence.pkl",train_prop=args.train_prop,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len)
+    # train_data3, test_data3 = load_data_random(data_path="./data/WiCount/data_sequence.pkl",train_prop=args.train_prop,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len)
+    # train_data = ConcatDataset([train_data1, train_data2, train_data3])
+    # test_data = ConcatDataset([test_data1, test_data2, test_data3])
 
     train_lodaer = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=True)

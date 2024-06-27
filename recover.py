@@ -8,6 +8,7 @@ from dataset import load_data
 import torch.nn as nn
 import copy
 import numpy as np
+import time
 
 pad=-1000
 
@@ -25,7 +26,8 @@ def get_args():
     parser.add_argument("--carrier_dim", type=int, default=52)
     parser.add_argument('--lr', type=float, default=0.0005)
     parser.add_argument('--epoch', type=int, default=30)
-    parser.add_argument('--data_path', type=str, default="./data/100")
+    parser.add_argument('--magnitude_path', type=str, default="./data/WiGesture/intern/0")
+    parser.add_argument('--data_path', type=str, default="./data/WiGesture")
     parser.add_argument('--parameter', type=str, default="./pretrain.pth")
 
     args = parser.parse_args()
@@ -54,12 +56,14 @@ def main():
     model.eval()
     torch.set_grad_enabled(False)
 
-    dataset = load_data(args.data_path)
+    dataset = load_data(data_path=args.data_path,magnitude_path=args.magnitude_path)
     data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False)
 
     pbar = tqdm.tqdm(data_loader, disable=False)
     output1 = None
     output2 = None
+    start_time = time.time()
+    model.eval()
     for x, _, _, _, timestamp in pbar:
         x = x.float().to(device)
         timestamp = timestamp.float().to(device)
@@ -88,10 +92,12 @@ def main():
             output1=torch.cat([output1,y],dim=0)
             output2=torch.cat([output2,y2],dim=0)
 
-        replace = output1.cpu().numpy()
-        recover = output2.cpu().numpy()
-        np.save("replace.npy", replace)
-        np.save("recover.npy", recover)
+    replace = output1.cpu().numpy()
+    recover = output2.cpu().numpy()
+    np.save(args.magnitude_path+"/replace.npy", replace)
+    np.save(args.magnitude_path+"/recover.npy", recover)
+    end_time = time.time()
+    print(f"Time Cost: {end_time - start_time} s")
 
 if __name__ == '__main__':
     main()

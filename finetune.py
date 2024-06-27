@@ -29,6 +29,7 @@ def get_args():
     parser.add_argument('--data_path', type=str, default="./data/data_sequence.pkl")
     parser.add_argument('--magnitude_path', type=str, default="recover.npy")
     parser.add_argument('--parameter', type=str, default=None)
+    parser.add_argument('--train_prop', type=float, default=0.9)
 
     parser.add_argument('--class_num', type=int, default=6) #action:6, people:8
     parser.add_argument('--task', type=str, default="action") # "action" or "people"
@@ -38,6 +39,7 @@ def get_args():
     parser.add_argument("--random_input", action="store_true",default=False)
     parser.add_argument("--recover_data", action="store_true",default=False)
     parser.add_argument("--freeze", action="store_true",default=False)
+    parser.add_argument("--dataset", type=str, default="WiGesture")
 
     parser.add_argument('--mode', type=int, default=0) # 0: train(100Hz),test(100Hz); 1: train(100Hz+50Hz),test(100Hz+50Hz); 2: train(100Hz),test(50Hz)
 
@@ -62,6 +64,9 @@ def iteration(data_loader,device,model,optim,task,train=True,mask=False):
         timestamp = timestamp.float().to(device)
         if task == "action":
             label = action.long().to(device)
+        elif task == "fall":
+            label = action.long().to(device)
+            label[label>1] = 1
         elif task == "people":
             label = people.long().to(device)
         else:
@@ -78,15 +83,14 @@ def iteration(data_loader,device,model,optim,task,train=True,mask=False):
         rand_word = torch.randn((batch_size, seq_len, carrier_num)).to(device)
         input[~non_pad]=rand_word[~non_pad]
 
-        if mask:
+        if mask :#and train:
             loss_mask = torch.zeros([batch_size, seq_len]).to(device)
-            chosen_num_min = seq_len * 0.1
-            chosen_num_max = seq_len * 0.3
+            chosen_num_min = int(seq_len * 0.1)
+            chosen_num_max = int(seq_len * 0.3)
             num_ones = torch.randint(chosen_num_min, chosen_num_max + 1, (batch_size,))
             row_indices = torch.arange(batch_size).unsqueeze(1).repeat(1, chosen_num_max)
             col_indices = torch.randint(0, seq_len, (batch_size, chosen_num_max))
             loss_mask[row_indices[:, :num_ones.max()], col_indices[:, :num_ones.max()]] = 1
-            loss_mask[~non_pad] = 0
             input[loss_mask.bool()] = rand_word[loss_mask.bool()]
 
         y = model(x,timestamp)
@@ -130,27 +134,46 @@ def main():
 
     if args.mode == 0:
         if args.recover_data:
-            train_data, test_data = load_data(data_path=args.data_path,train_prop=0.9,magnitude_path=args.magnitude_path)
+            train_data, test_data = load_data(data_path=args.data_path,train_prop=args.train_prop,magnitude_path=args.magnitude_path)
         else:
             if args.random_input:
-                train_data, test_data = load_data_random(data_path=args.data_path, train_prop=0.9,
+                train_data, test_data = load_data_random(data_path=args.data_path, train_prop=args.train_prop,
                                                          trainset_num=2000, testset_num=150, min_len=args.max_len,
                                                          max_len=args.max_len * 3, length=args.max_len)
             else:
-                train_data, test_data = load_data_random(data_path=args.data_path, train_prop=0.9,
+                train_data, test_data = load_data_random(data_path=args.data_path, train_prop=args.train_prop,
                                                          trainset_num=2000, testset_num=150, min_len=args.max_len,
                                                          max_len=args.max_len, length=args.max_len)
     elif args.mode == 1:
-        train_data1, _, test_data1 = load_data_random(data_path=args.data_path,train_prop=0.45,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=1)
-        _, train_data2, test_data2 = load_data_random(data_path=args.data_path,train_prop=0.45,valid_prop=0.45,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=2)
+        if args.dataset=="WiFall":
+            train_data1, test_data1 = load_data_random(data_path=args.data_path, train_prop=args.train_prop, trainset_num=2000,
+                                                          testset_num=150, min_len=args.max_len, max_len=args.max_len,
+                                                          length=args.max_len, gap=1)
+            train_data2, _ = load_data_random(data_path=args.data_path, train_prop=args.train_prop, trainset_num=2000,
+                                                          testset_num=150, min_len=args.max_len, max_len=args.max_len,
+                                                          length=args.max_len, gap=2)
+            _, test_data2 = load_data_random(data_path=args.data_path, train_prop= 1 - args.train_prop, trainset_num=2000,
+                                                          testset_num=150, min_len=args.max_len, max_len=args.max_len,
+                                                          length=args.max_len, gap=2)
+        else:
+            train_data1, _, test_data1 = load_data_random(data_path=args.data_path,train_prop=args.train_prop/2,valid_prop=args.train_prop/2,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=1)
+            _, train_data2, test_data2 = load_data_random(data_path=args.data_path,train_prop=args.train_prop/2,valid_prop=args.train_prop/2,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=2)
         train_data = ConcatDataset([train_data1, train_data2])
         test_data = ConcatDataset([test_data1, test_data2])
     elif args.mode == 2:
-        train_data, _ = load_data_random(data_path=args.data_path,train_prop=0.9,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=1)
-        _, test_data2 = load_data_random(data_path=args.data_path,train_prop=0.9,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=2)
+        if args.dataset=="WiFall":
+            train_data, _ = load_data_random(data_path=args.data_path, train_prop=args.train_prop, trainset_num=2000,
+                                             testset_num=150, min_len=args.max_len, max_len=args.max_len,
+                                             length=args.max_len, gap=1)
+            _, test_data = load_data_random(data_path=args.data_path, train_prop=1-args.train_prop, trainset_num=2000,
+                                            testset_num=150, min_len=args.max_len, max_len=args.max_len,
+                                            length=args.max_len, gap=2)
+        else:
+            train_data, _ = load_data_random(data_path=args.data_path,train_prop=args.train_prop,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=1)
+            _, test_data = load_data_random(data_path=args.data_path,train_prop=args.train_prop,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len,gap=2)
 
 
-    train_lodaer = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
+    train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=True)
 
     best_loss = 1e8
@@ -167,7 +190,7 @@ def main():
                 if param.requires_grad:
                     param.requires_grad = False
 
-        loss, acc = iteration(train_lodaer,device,model,optim,args.task,train=True,mask=args.mask)
+        loss, acc = iteration(train_loader,device,model,optim,args.task,train=True,mask=args.mask)
         log = "Epoch {} | Train Loss {:06f} ,  Train Acc {:06f} | ".format(j, loss, acc)
         print(log)
         with open(args.task+".txt", 'a') as file:

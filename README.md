@@ -85,3 +85,9 @@ python prediction.py  --data_path <data path> --parameters <fold path of the who
 ```
 
  
+
+### 3 Notice
+
+The current version of our code does not support multiple GPUs. Please specify only one GPU or fix the relevant code. We would appreciate if you could share the code that can solve this problem.
+
+#### 

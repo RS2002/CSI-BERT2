@@ -36,7 +36,9 @@ class CSI_dataset(Dataset):
 
 def load_data(data_path="./data",train_prop=None,valid_prop=None, data_num=None,magnitude_path=None):
     if magnitude_path is not None:
-        magnitude = np.load(data_path+"/"+magnitude_path).astype(np.float32)
+        # magnitude = np.load(data_path+"/"+magnitude_path).astype(np.float32)
+        # magnitude = np.load(magnitude_path+"/magnitude.npy").astype(np.float32)
+        magnitude = np.load(magnitude_path).astype(np.float32)
     else:
         magnitude = np.load(data_path+"/magnitude.npy").astype(np.float32)
     people=np.load(data_path+"/people.npy").astype(np.int64)
@@ -119,6 +121,14 @@ class CSI_dataset_random(Dataset):
         timestamp=self.timestamp[i]
         action=self.label_action[i]
         people=self.label_people[i]
+
+        while magnitude.shape[0]<=self.max_len:
+            i = np.random.randint(0, len(self.magnitudes))
+            magnitude = self.magnitudes[i]
+            phase = self.phases[i]
+            timestamp = self.timestamp[i]
+            action = self.label_action[i]
+            people = self.label_people[i]
 
         l=np.random.randint(0,magnitude.shape[0]-self.max_len)
         r=l+np.random.randint(self.min_len,self.max_len+1)

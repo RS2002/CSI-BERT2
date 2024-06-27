@@ -37,7 +37,7 @@ def get_args():
     parser.add_argument('--data_path', type=str, default="./data/data_sequence.pkl")
     parser.add_argument('--parameter', type=str, default=None)
     parser.add_argument('--eval_percent', type=float, default=None)
-
+    parser.add_argument('--train_prop', type=float, default=0.9)
 
     parser.add_argument('--MMD', action="store_true", default=False)
     parser.add_argument('--GAN', action="store_true", default=False)
@@ -310,7 +310,7 @@ def main():
     if args.eval_percent is not None:
         if args.parameter is not None:
             model.load_state_dict(torch.load(args.parameter + "/prediction.pth"))
-        _, test_data = load_data_random(data_path=args.data_path, train_prop=0.9, trainset_num=2000,
+        _, test_data = load_data_random(data_path=args.data_path, train_prop=args.train_prop, trainset_num=2000,
                                                  testset_num=150, min_len=args.max_len, max_len=args.max_len,
                                                  length=args.max_len)
         test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=True)
@@ -329,8 +329,8 @@ def main():
     optim = AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
     optim_dis = AdamW(discriminator.parameters(), lr=args.lr, weight_decay=0.01)
 
-    # train_data, test_data = load_data_random(data_path=args.data_path,train_prop=0.9,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len*3,length=args.max_len)
-    train_data, test_data = load_data_random(data_path=args.data_path,train_prop=0.9,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len)
+    # train_data, test_data = load_data_random(data_path=args.data_path,train_prop=args.train_prop,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len*3,length=args.max_len)
+    train_data, test_data = load_data_random(data_path=args.data_path,train_prop=args.train_prop,trainset_num=2000,testset_num=150,min_len=args.max_len,max_len=args.max_len,length=args.max_len)
     train_lodaer = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=args.batch_size, shuffle=True)
 
