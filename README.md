@@ -12,11 +12,15 @@ The code is based on [CSI-BERT1](https://github.com/RS2002/CSI-BERT) ([article](
 
 ### 1.1 Dataset
 
- WiGesture (Dynamic Part), WiFall, Wicount
+Public Dataset: [WiGesture](https://paperswithcode.com/dataset/wigesture), WiFall
+
+Proposed Dataset: WiCount (./WiCount)
 
 
 
 ### 1.2 Data Preparation
+
+Refer to [RS2002/CSI-BERT: Official Repository for The Paper, Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing (github.com)](https://github.com/RS2002/CSI-BERT)
 
 
 
