@@ -1,6 +1,6 @@
 # CSI-BERT2
 
-**Article:** Zijian Zhao, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "Mining Limited Data Sufficiently: A BERT-inspired Approach for CSI Time Series Application in ISAC", under way
+**Article:** Zijian Zhao, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "Mining Limited Data Sufficiently: A BERT-inspired Approach for CSI Time Series Application in Wireless Communication and Sensing", under way
 
 The code is based on [CSI-BERT1](https://github.com/RS2002/CSI-BERT) ([article](https://arxiv.org/pdf/2403.12400)).
 
