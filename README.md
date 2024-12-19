@@ -1,6 +1,6 @@
 # CSI-BERT2
 
-**Article:** Zijian Zhao, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "Mining Limited Data Sufficiently: A BERT-inspired Approach for CSI Time Series Application in Wireless Communication and Sensing", under way
+**Article:** Zijian Zhao, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "[ Mining Limited Data Sufficiently: A BERT-inspired Approach for CSI Time Series Application in Wireless Communication and Sensing](https://arxiv.org/abs/2412.06861)", (under way)
 
 The code is based on [CSI-BERT1](https://github.com/RS2002/CSI-BERT) ([article](https://arxiv.org/pdf/2403.12400)).
 
@@ -90,8 +90,20 @@ python prediction.py  --data_path <data path> --parameters <fold path of the who
 
  
 
-### 3 Notice
+## 3. Notice
 
 The current version of our code does not support multiple GPUs. Please specify only one GPU or fix the relevant code. We would appreciate if you could share the code that can solve this problem.
 
-#### 
+
+
+## 4. Reference
+
+```
+@article{zhao2024mining,
+  title={Mining Limited Data Sufficiently: A BERT-inspired Approach for CSI Time Series Application in Wireless Communication and Sensing},
+  author={Zhao, Zijian and Meng, Fanyi and Li, Hang and Li, Xiaoyang and Zhu, Guangxu},
+  journal={arXiv preprint arXiv:2412.06861},
+  year={2024}
+}
+```
+
