@@ -1,8 +1,8 @@
 # CSI-BERT2
 
-**Article:** Zijian Zhao, Fanyi Meng, Hang Li, XiaoYang Li, Guangxu Zhu*, "[ Mining Limited Data Sufficiently: A BERT-inspired Approach for CSI Time Series Application in Wireless Communication and Sensing](https://arxiv.org/abs/2412.06861)", (under way)
+**Article:** Zijian Zhao, Fanyi Meng, Zhonghao Lyu, Hang Li, XiaoYang Li, Guangxu Zhu*, "[CSI-BERT2: A BERT-inspired Framework for Efficient CSI Prediction and Classification in Wireless Communication and Sensing](https://arxiv.org/abs/2412.06861)", (under review, IEEE Transactions on Mobile Computing (TMC))
 
-The code is based on [CSI-BERT1](https://github.com/RS2002/CSI-BERT) ([article](https://arxiv.org/pdf/2403.12400)).
+Upgraded version of [Official Repository for The Paper, Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing](https://github.com/RS2002/CSI-BERT).
 
 ![](./img/main.png)
 
@@ -12,7 +12,7 @@ The code is based on [CSI-BERT1](https://github.com/RS2002/CSI-BERT) ([article](
 
 ### 1.1 Dataset
 
-Public Dataset: [WiGesture](https://paperswithcode.com/dataset/wigesture), WiFall
+Public Dataset: [WiGesture](http://www.sdp8.net/Dataset?id=5d4ee7ca-d0b0-45e3-9510-abb6e9cdebf9), [WiFall](https://github.com/RS2002/KNN-MMD/tree/main/WiFall)
 
 Proposed Dataset: WiCount (./WiCount)
 
@@ -25,10 +25,6 @@ Refer to [RS2002/CSI-BERT: Official Repository for The Paper, Finding the Missin
 
 
 ## 2. Train
-
-![](./img/process.png)
-
-
 
 ### 2.1 Pre-train
 
@@ -100,8 +96,8 @@ The current version of our code does not support multiple GPUs. Please specify o
 
 ```
 @article{zhao2024mining,
-  title={Mining Limited Data Sufficiently: A BERT-inspired Approach for CSI Time Series Application in Wireless Communication and Sensing},
-  author={Zhao, Zijian and Meng, Fanyi and Li, Hang and Li, Xiaoyang and Zhu, Guangxu},
+  title={CSI-BERT2: A BERT-inspired Framework for Efficient CSI Prediction and Classification in Wireless Communication and Sensing},
+  author={Zhao, Zijian and Meng, Fanyi and Lyu, Zhonghao and Li, Hang and Li, Xiaoyang and Zhu, Guangxu},
   journal={arXiv preprint arXiv:2412.06861},
   year={2024}
 }
