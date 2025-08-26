@@ -4,7 +4,7 @@
 
 Upgraded version of [Official Repository for The Paper, Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing](https://github.com/RS2002/CSI-BERT).
 
-**Notice:** We have uploaded our model and pre-trained parameters to [Hugging Face](https://huggingface.co/RS2002/CSI-BERT2).
+**Notice:** We have uploaded our model, pre-trained parameters ([RS2002/WiGesture · Datasets at Hugging Face](https://huggingface.co/datasets/RS2002/WiGesture)), and dataset ([RS2002/WiCount · Datasets at Hugging Face](https://huggingface.co/datasets/RS2002/WiCount)) to Hugging Face.
 
 ![](./img/main.png)
 
