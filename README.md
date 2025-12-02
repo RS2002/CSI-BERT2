@@ -1,6 +1,6 @@
 # CSI-BERT2
 
-**Article:** Zijian Zhao, Fanyi Meng, Zhonghao Lyu, Hang Li, XiaoYang Li, Guangxu Zhu*, "[CSI-BERT2: A BERT-inspired Framework for Efficient CSI Prediction and Classification in Wireless Communication and Sensing](https://arxiv.org/abs/2412.06861)", (under review, IEEE Transactions on Mobile Computing (TMC))
+**Article:** Zijian Zhao, Fanyi Meng, Zhonghao Lyu, Hang Li, XiaoYang Li, Guangxu Zhu*, "[CSI-BERT2: A BERT-inspired Framework for Efficient CSI Prediction and Classification in Wireless Communication and Sensing](https://arxiv.org/abs/2412.06861)", IEEE Transactions on Mobile Computing (TMC), 2025
 
 Upgraded version of [Official Repository for The Paper, Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing](https://github.com/RS2002/CSI-BERT).
 
