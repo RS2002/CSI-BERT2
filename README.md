@@ -1,6 +1,6 @@
 # CSI-BERT2
 
-**Article:** Zijian Zhao, Fanyi Meng, Zhonghao Lyu, Hang Li, XiaoYang Li, Guangxu Zhu*, "[CSI-BERT2: A BERT-inspired Framework for Efficient CSI Prediction and Classification in Wireless Communication and Sensing](https://arxiv.org/abs/2412.06861)", IEEE Transactions on Mobile Computing (TMC), 2025
+**Article:** Zijian Zhao, Fanyi Meng, Zhonghao Lyu, Hang Li, XiaoYang Li, Guangxu Zhu*, "[CSI-BERT2: A BERT-inspired Framework for Efficient CSI Prediction and Classification in Wireless Communication and Sensing](https://ieeexplore.ieee.org/document/11278110)", IEEE Transactions on Mobile Computing (TMC), 2025
 
 Upgraded version of [Official Repository for The Paper, Finding the Missing Data: A BERT-inspired Approach Against Package Loss in Wireless Sensing](https://github.com/RS2002/CSI-BERT).
 
@@ -97,11 +97,15 @@ The current version of our code does not support multiple GPUs. Please specify o
 ## 4. Reference
 
 ```
-@article{zhao2024mining,
-  title={CSI-BERT2: A BERT-inspired Framework for Efficient CSI Prediction and Classification in Wireless Communication and Sensing},
+@ARTICLE{11278110,
   author={Zhao, Zijian and Meng, Fanyi and Lyu, Zhonghao and Li, Hang and Li, Xiaoyang and Zhu, Guangxu},
-  journal={arXiv preprint arXiv:2412.06861},
-  year={2024}
-}
+  journal={IEEE Transactions on Mobile Computing}, 
+  title={CSI-BERT2: A BERT-inspired Framework for Efficient CSI Prediction and Classification in Wireless Communication and Sensing}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={1-17},
+  keywords={Wireless communication;Sensors;Wireless sensor networks;Predictive models;Wireless fidelity;Training;Adaptation models;Packet loss;Data models;OFDM;Channel statement information (CSI);CSI prediction;CSI classification;wireless communication;wireless sensing},
+  doi={10.1109/TMC.2025.3640420}}
 ```
 
